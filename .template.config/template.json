@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Remo",
+  "classifications": [
+    "Web",
+    "Clean Architecture",
+    "API"
+  ],
+  "identity": "Remo.CleanArchitecture.Template",
+  "name": "Remo's Clean Architecture Template",
+  "shortName": "remo-clean-arch",
+  "sourceName": "CleanArchitecture",
+  "postActions": [
+    {
+      "condition": "(!skipRestore)",
+      "description": "Restore NuGet packages required by this project.",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet restore'"
+        }
+      ],
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "continueOnError": true
+    }
+  ],
+  "description": "ASP.NET Core 9 Clean Architecture project template",
+  "preferNameDirectory": true,
+  "defaultName": "CleanArchitectureApp",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "symbols": {
+    "skipRestore": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "If specified, skips the automatic restore of the project on create.",
+      "defaultValue": "false"
+    }
+  },
+  "guids": [
+    "C4E87702-3101-4274-B6D2-E24A29FC5A64",
+    "283D89F4-6249-4957-B934-55F00F09E1DC",
+    "65E2EB43-3BCB-4C7C-B74F-555E2B595167",
+    "D8443A75-FF1A-44D3-8379-18C6AA59C7AA",
+    "0C165C9A-7209-45F9-BCCC-34294806EA8C",
+    "AA9DF532-DA65-4028-A696-7FBDAD4BBE0D",
+    "E4B90C51-8370-4C6F-BC7E-BF02FAF10125"
+  ],
+  "sources": [
+    {
+      "include": [
+        "**/*"
+      ],
+      "exclude": [
+        ".idea/**",
+        ".vs/**",
+        ".vscode/**",
+        ".git/**",
+        ".github/**",
+        ".template.config/**"
+      ]
+    }
+  ],
+  "modifiers": [
+    {
+      "rename": {
+        "README.template.md": "README.md"
+      }
+    }
+  ]
+}
