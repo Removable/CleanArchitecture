@@ -36,17 +36,24 @@
       "datatype": "bool",
       "description": "If specified, skips the automatic restore of the project on create.",
       "defaultValue": "false"
+    },
+    "WebUserSecretsId": {
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "4e527d57-a39e-4193-b642-bc320320b862",
+      "parameters": {
+        "format": "D"
+      }
+    },
+    "AppHostUserSecretsId": {
+      "type": "generated",
+      "generator": "guid",
+      "replaces": "95ba95b4-fa17-4363-a597-08835d4db2a9",
+      "parameters": {
+        "format": "D"
+      }
     }
   },
-  "guids": [
-    "C4E87702-3101-4274-B6D2-E24A29FC5A64",
-    "283D89F4-6249-4957-B934-55F00F09E1DC",
-    "65E2EB43-3BCB-4C7C-B74F-555E2B595167",
-    "D8443A75-FF1A-44D3-8379-18C6AA59C7AA",
-    "0C165C9A-7209-45F9-BCCC-34294806EA8C",
-    "AA9DF532-DA65-4028-A696-7FBDAD4BBE0D",
-    "E4B90C51-8370-4C6F-BC7E-BF02FAF10125"
-  ],
   "sources": [
     {
       "include": [
