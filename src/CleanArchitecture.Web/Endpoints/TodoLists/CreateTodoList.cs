@@ -12,7 +12,6 @@ sealed class CreateTodoListEndpoint(IMediator mediator) : Endpoint<CreateTodoLis
 {
     public override void Configure()
     {
-        AllowAnonymous();
         Version(1);
         Post("");
         Group<TodoListGroup>();

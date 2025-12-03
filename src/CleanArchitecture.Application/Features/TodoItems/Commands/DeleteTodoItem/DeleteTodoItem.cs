@@ -3,9 +3,9 @@ using CleanArchitecture.Domain.TodoListAggregate.Specifications;
 
 namespace CleanArchitecture.Application.Features.TodoItems.Commands.DeleteTodoItem;
 
+[Authorize]
 public sealed record DeleteTodoItemCommand(Guid TodoListId, Guid TodoItemId) : IRequest<Result>;
 
-[Authorize]
 public sealed class DeleteTodoItemCommandHandler(IServiceScopeFactory serviceScopeFactory)
     : IRequestHandler<DeleteTodoItemCommand, Result>
 {

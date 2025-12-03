@@ -7,7 +7,6 @@ sealed class DeleteTodoListEndpoint(IMediator mediator) : Endpoint<DeleteTodoLis
     public override void Configure()
     {
         Delete("{Id:guid}");
-        AllowAnonymous();
         Group<TodoListGroup>();
         Version(1);
     }

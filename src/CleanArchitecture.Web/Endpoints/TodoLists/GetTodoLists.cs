@@ -8,7 +8,6 @@ public sealed class GetTodoLists(IMediator mediator)
 {
     public override void Configure()
     {
-        AllowAnonymous();
         Version(1);
         Get("/");
         Group<TodoListGroup>();

@@ -13,7 +13,6 @@ sealed class UpdateTodoListEndpoint(IMediator mediator) : Endpoint<UpdateTodoLis
     public override void Configure()
     {
         Patch("{Id:guid}");
-        AllowAnonymous();
         Version(1);
         Group<TodoListGroup>();
     }

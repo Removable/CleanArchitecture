@@ -1,8 +1,8 @@
 using CleanArchitecture.Application;
 using CleanArchitecture.Infrastructure;
-using CleanArchitecture.Infrastructure.Data;
 using CleanArchitecture.Web;
 using CleanArchitecture.Web.Extensions;
+using CleanArchitecture.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +15,12 @@ builder.AddWebServices();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsEnvironment("Testing"))
 {
     await app.InitialiseDatabaseAsync();
 }
-else
+
+if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -28,15 +29,13 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseExceptionHandler();
+
 app.UseSwaggerUi(settings =>
 {
     settings.Path = "/api";
     // settings.DocumentPath = "/api/specification.json";
 });
-app.UsePathBase("/api");
-
-
-app.UseExceptionHandler(options => { });
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -47,3 +46,5 @@ app.MapDefaultEndpoints();
 app.MapEndpoints();
 
 app.Run();
+
+public partial class Program {}

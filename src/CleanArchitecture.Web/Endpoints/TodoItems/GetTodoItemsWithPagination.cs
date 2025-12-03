@@ -11,7 +11,6 @@ sealed class GetTodoItemsWithPaginationEndpoint(IMediator mediator)
     public override void Configure()
     {
         Get("");
-        AllowAnonymous();
         Version(1);
         Group<TodoItemGroup>();
     }

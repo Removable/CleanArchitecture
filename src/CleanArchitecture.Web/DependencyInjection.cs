@@ -9,13 +9,17 @@ public static class DependencyInjection
 {
     public static void AddWebServices(this IHostApplicationBuilder builder)
     {
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        }
 
         builder.Services.AddScoped<IUser, CurrentUser>();
 
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+        builder.Services.AddProblemDetails();
 
         // This is used to suppress the default 400 Bad Request response.
         builder.Services.Configure<ApiBehaviorOptions>(options =>

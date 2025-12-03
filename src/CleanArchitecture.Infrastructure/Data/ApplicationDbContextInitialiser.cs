@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace CleanArchitecture.Infrastructure.Data;
 
@@ -17,8 +18,14 @@ public static class InitialiserExtensions
 
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
 
-        await initialiser.InitialiseAsync().ConfigureAwait(false); // This line should be removed in production
-        // await initialiser.MigrateAsync().ConfigureAwait(false); // This line should be used in production
+        if (app.Environment.IsDevelopment())
+        {
+            await initialiser.InitialiseAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            await initialiser.MigrateAsync().ConfigureAwait(false);
+        }
         await initialiser.SeedAsync().ConfigureAwait(false);
     }
 }
