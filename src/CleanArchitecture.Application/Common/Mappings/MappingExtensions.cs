@@ -1,5 +1,4 @@
 ﻿using CleanArchitecture.Application.Common.Models;
-using CleanArchitecture.Domain.Common;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 

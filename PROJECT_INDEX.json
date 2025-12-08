@@ -1,0 +1,203 @@
+{
+  "projectName": "CleanArchitecture",
+  "description": "ASP.NET Core 9 Clean Architecture project template with .NET Aspire orchestration",
+  "generated": "2025-12-08",
+  "framework": ".NET 9.0",
+  "architecture": "Clean Architecture with CQRS",
+  "entryPoints": {
+    "webApi": "src/CleanArchitecture.Web/Program.cs",
+    "aspireHost": "src/CleanArchitecture.AppHost/Program.cs",
+    "template": ".template.config/template.json"
+  },
+  "projects": {
+    "src": [
+      {
+        "name": "CleanArchitecture.AppHost",
+        "path": "src/CleanArchitecture.AppHost",
+        "type": "AspireHost",
+        "purpose": ".NET Aspire orchestration host"
+      },
+      {
+        "name": "CleanArchitecture.Web",
+        "path": "src/CleanArchitecture.Web",
+        "type": "WebApi",
+        "purpose": "FastEndpoints API layer",
+        "dependencies": ["Infrastructure", "ServiceDefaults"]
+      },
+      {
+        "name": "CleanArchitecture.Application",
+        "path": "src/CleanArchitecture.Application",
+        "type": "ClassLibrary",
+        "purpose": "CQRS handlers, validators, behaviors",
+        "dependencies": ["Domain"]
+      },
+      {
+        "name": "CleanArchitecture.Infrastructure",
+        "path": "src/CleanArchitecture.Infrastructure",
+        "type": "ClassLibrary",
+        "purpose": "EF Core, Identity, repositories",
+        "dependencies": ["Application", "Domain", "Shared"]
+      },
+      {
+        "name": "CleanArchitecture.Domain",
+        "path": "src/CleanArchitecture.Domain",
+        "type": "ClassLibrary",
+        "purpose": "Entities, aggregates, events, specifications",
+        "dependencies": ["Shared"]
+      },
+      {
+        "name": "CleanArchitecture.ServiceDefaults",
+        "path": "src/CleanArchitecture.ServiceDefaults",
+        "type": "ClassLibrary",
+        "purpose": "Aspire service defaults"
+      },
+      {
+        "name": "CleanArchitecture.Shared",
+        "path": "src/CleanArchitecture.Shared",
+        "type": "ClassLibrary",
+        "purpose": "Cross-cutting utilities"
+      }
+    ],
+    "tests": [
+      {
+        "name": "CleanArchitecture.UnitTests",
+        "path": "tests/CleanArchitecture.UnitTests",
+        "type": "xUnit",
+        "purpose": "Domain unit tests"
+      },
+      {
+        "name": "CleanArchitecture.IntegrationTests",
+        "path": "tests/CleanArchitecture.IntegrationTests",
+        "type": "xUnit",
+        "purpose": "API integration tests"
+      }
+    ]
+  },
+  "domain": {
+    "aggregates": [
+      {
+        "name": "TodoList",
+        "path": "src/CleanArchitecture.Domain/TodoListAggregate/TodoList.cs",
+        "entities": ["TodoItem"],
+        "events": ["TodoItemCreatedEvent", "TodoItemCompletedEvent", "TodoItemDeletedEvent"]
+      }
+    ],
+    "baseClasses": [
+      "BaseEntity",
+      "BaseAuditableEntity",
+      "BaseEvent"
+    ],
+    "interfaces": [
+      "IAggregateRoot",
+      "ISoftDeletion",
+      "IOwnerId",
+      "IRepository<T>",
+      "IReadRepository<T>"
+    ],
+    "valueObjects": ["Colour"],
+    "enums": ["PriorityLevel"],
+    "specifications": [
+      "GetUserTodoListsSpec",
+      "TodoListGetByIdSpec",
+      "GetTodoItemsByListIdSpec",
+      "TodoListTitleUniquenessCheckSpec"
+    ]
+  },
+  "application": {
+    "features": {
+      "TodoLists": {
+        "commands": [
+          "CreateTodoList",
+          "UpdateTodoList",
+          "DeleteTodoList",
+          "PurgeTodoLists"
+        ],
+        "queries": ["GetTodos"]
+      },
+      "TodoItems": {
+        "commands": [
+          "CreateTodoItem",
+          "UpdateTodoItem",
+          "UpdateTodoItemDetail"
+        ],
+        "queries": ["GetTodoItemsWithPagination"]
+      }
+    },
+    "behaviors": [
+      "LoggingBehaviour",
+      "UnhandledExceptionBehaviour",
+      "AuthorizationBehaviour",
+      "ValidationBehaviour",
+      "PerformanceBehaviour"
+    ]
+  },
+  "infrastructure": {
+    "dbContext": "AppDbContext",
+    "repositories": ["EfRepository<T>", "EfReadRepository<T>"],
+    "interceptors": ["AuditableEntityInterceptor", "DispatchDomainEventsInterceptor"],
+    "identity": ["ApplicationUser", "IdentityService"]
+  },
+  "api": {
+    "framework": "FastEndpoints",
+    "basePath": "/api/v1",
+    "endpoints": [
+      { "method": "GET", "route": "/TodoLists", "handler": "GetTodos" },
+      { "method": "POST", "route": "/TodoLists", "handler": "CreateTodoList" },
+      { "method": "PUT", "route": "/TodoLists/{id}", "handler": "UpdateTodoList" },
+      { "method": "DELETE", "route": "/TodoLists/{id}", "handler": "DeleteTodoList" },
+      { "method": "GET", "route": "/TodoItems", "handler": "GetTodoItemsWithPagination" }
+    ],
+    "swagger": "/api"
+  },
+  "dependencies": {
+    "core": [
+      { "name": "FastEndpoints", "version": "7.1.0" },
+      { "name": "Mediator", "version": "3.0.1" },
+      { "name": "FluentValidation", "version": "12.0.0" },
+      { "name": "Mapster", "version": "7.4.0" }
+    ],
+    "ardalis": [
+      { "name": "Ardalis.Specification", "version": "9.3.1" },
+      { "name": "Ardalis.GuardClauses", "version": "5.0.0" },
+      { "name": "Ardalis.Result", "version": "10.1.0" }
+    ],
+    "efCore": [
+      { "name": "Microsoft.EntityFrameworkCore", "version": "9.0.10" },
+      { "name": "Npgsql.EntityFrameworkCore.PostgreSQL", "version": "9.0.4" }
+    ],
+    "aspire": [
+      { "name": "Aspire.Npgsql.EntityFrameworkCore.PostgreSQL", "version": "9.5.2" }
+    ],
+    "testing": [
+      { "name": "xUnit" },
+      { "name": "Shouldly" },
+      { "name": "FluentAssertions" }
+    ]
+  },
+  "configuration": {
+    "connectionStringKey": "ConnectionStrings:CleanArchitectureDb",
+    "database": "PostgreSQL"
+  },
+  "template": {
+    "shortName": "remo-clean-arch",
+    "author": "Remo",
+    "identity": "Remo.CleanArchitecture.Template"
+  },
+  "patterns": [
+    "Clean Architecture",
+    "CQRS",
+    "Repository Pattern",
+    "Specification Pattern",
+    "Domain Events",
+    "Aggregate Root",
+    "Value Objects"
+  ],
+  "fileCounts": {
+    "sourceProjects": 7,
+    "testProjects": 2,
+    "domainEntities": 2,
+    "commands": 6,
+    "queries": 2,
+    "endpoints": 5
+  }
+}

@@ -1,3 +1,4 @@
+using CleanArchitecture.Domain.Constants;
 using CleanArchitecture.Domain.TodoListAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -8,7 +9,14 @@ public class TodoListConfiguration : IEntityTypeConfiguration<TodoList>
 {
     public void Configure(EntityTypeBuilder<TodoList> builder)
     {
+        builder.ToTable("TodoLists");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Ignore(x => x.DomainEvents);
+
         builder.Property(x => x.Title)
+            .HasMaxLength(LengthConstants.MediumTitleMaxLength)
             .IsRequired();
 
         builder.Property(x => x.Colour)
@@ -18,6 +26,7 @@ public class TodoListConfiguration : IEntityTypeConfiguration<TodoList>
             .IsRequired();
 
         builder.Property(x => x.UserId)
+            .HasMaxLength(LengthConstants.UserIdMaxLength)
             .IsRequired();
 
         builder.HasMany(x => x.Items)

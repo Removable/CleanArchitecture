@@ -1,6 +1,5 @@
 ﻿using CleanArchitecture.Application.Common.Models;
 using CleanArchitecture.Application.Features.TodoItems.Queries.GetTodoItemsWithPagination;
-using CleanArchitecture.Domain.Common;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CleanArchitecture.Web.Endpoints.TodoItems;

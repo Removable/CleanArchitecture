@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
-namespace CleanArchitecture.Domain.Common;
+namespace CleanArchitecture.Application.Common.Models;
 
 public sealed class PaginatedList<T> where T : class
 {

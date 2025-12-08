@@ -1,22 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using CleanArchitecture.Domain.Common.Interfaces;
-using CleanArchitecture.Domain.Constants;
+﻿using CleanArchitecture.Domain.Common.Interfaces;
 using CleanArchitecture.Domain.TodoListAggregate.Events;
 
 namespace CleanArchitecture.Domain.TodoListAggregate;
 
-[Table("TodoLists")]
 public sealed class TodoList : BaseAuditableEntity, IAggregateRoot, IOwnerId
 {
-    [Column]
-    [MaxLength(LengthConstants.MediumTitleMaxLength)]
     public required string Title { get; set; }
 
     public Colour Colour { get; set; } = Colour.White;
 
-    [Column]
-    [MaxLength(LengthConstants.UserIdMaxLength)]
     public required string UserId { get; set; }
 
     private readonly List<TodoItem> _todoItems = [];

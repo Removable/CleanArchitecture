@@ -9,11 +9,21 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {
     public void Configure(EntityTypeBuilder<TodoItem> builder)
     {
+        builder.ToTable("TodoItems");
+
+        builder.HasKey(x => x.Id);
+
+        builder.Ignore(x => x.DomainEvents);
+
         builder.Property(x => x.Title)
             .HasMaxLength(LengthConstants.MediumTitleMaxLength);
 
         builder.Property(x => x.Note)
             .HasMaxLength(LengthConstants.MediumContentMaxLength);
+
+        builder.Property(x => x.UserId)
+            .HasMaxLength(LengthConstants.UserIdMaxLength)
+            .IsRequired();
 
         builder.Property(x => x.Priority)
             .HasConversion<int>();

@@ -1,4 +1,4 @@
-﻿using CleanArchitecture.Domain.Common;
+﻿using CleanArchitecture.Application.Common.Models;
 using CleanArchitecture.Domain.TodoListAggregate;
 using CleanArchitecture.Domain.TodoListAggregate.Specifications;
 using FastEndpoints;

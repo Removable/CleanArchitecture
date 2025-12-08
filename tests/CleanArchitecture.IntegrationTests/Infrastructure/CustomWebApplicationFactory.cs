@@ -95,11 +95,17 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<global::
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
-        _connection?.Dispose();
-        return Task.CompletedTask;
+        if (_connection is not null)
+        {
+            await _connection.DisposeAsync();
+        }
+
+        await base.DisposeAsync();
     }
+
+    Task IAsyncLifetime.DisposeAsync() => DisposeAsync().AsTask();
 
     public HttpClient CreateJsonClient()
     {
@@ -119,8 +125,7 @@ public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationScheme
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
+        UrlEncoder encoder) : base(options, logger, encoder)
     { }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
