@@ -16,17 +16,13 @@ public sealed record UpdateTodoItemDetailCommand : IRequest<Result>
     public string? Note { get; init; }
 }
 
-public sealed class UpdateTodoItemDetailCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class UpdateTodoItemDetailCommandHandler(IRepository<TodoList> repository, IUser user)
     : IRequestHandler<UpdateTodoItemDetailCommand, Result>
 {
     public async ValueTask<Result> Handle(UpdateTodoItemDetailCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-
         var todoList = await repository.SingleOrDefaultAsync(
-            new TodoListGetByIdSpec(request.TodoListId, Guard.Against.NullOrEmpty(user.Id)), cancellationToken)
+                new TodoListGetByIdSpec(request.TodoListId, Guard.Against.NullOrEmpty(user.Id)), cancellationToken)
             .ConfigureAwait(false);
         if (todoList == null)
         {
@@ -43,8 +39,8 @@ public sealed class UpdateTodoItemDetailCommandHandler(IServiceScopeFactory serv
         todoItem.Priority = request.Priority;
         todoItem.Note = request.Note;
 
-        await repository.UpdateAsync(todoList, cancellationToken);
-        await repository.SaveChangesAsync(cancellationToken);
+        await repository.UpdateAsync(todoList, cancellationToken).ConfigureAwait(false);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result.Success();
     }

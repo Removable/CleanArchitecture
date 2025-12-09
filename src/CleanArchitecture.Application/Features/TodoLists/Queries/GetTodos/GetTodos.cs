@@ -10,15 +10,11 @@ namespace CleanArchitecture.Application.Features.TodoLists.Queries.GetTodos;
 [Authorize]
 public sealed record GetTodosQuery : IRequest<TodosVm>;
 
-public sealed class GetTodosQueryHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class GetTodosQueryHandler(IReadRepository<TodoList> repository, IUser user)
     : IRequestHandler<GetTodosQuery, TodosVm>
 {
     public async ValueTask<TodosVm> Handle(GetTodosQuery request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IReadRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        
         var spec = new GetUserTodoListsSpec(Guard.Against.NullOrEmpty(user.Id));
 
         return new TodosVm

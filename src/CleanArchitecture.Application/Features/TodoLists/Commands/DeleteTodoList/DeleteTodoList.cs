@@ -6,15 +6,11 @@ namespace CleanArchitecture.Application.Features.TodoLists.Commands.DeleteTodoLi
 [Authorize]
 public sealed record DeleteTodoListCommand(Guid Id) : IRequest<Unit>;
 
-public sealed class DeleteTodoListCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class DeleteTodoListCommandHandler(IUser user, IRepository<TodoList> repository)
     : IRequestHandler<DeleteTodoListCommand, Unit>
 {
     public async ValueTask<Unit> Handle(DeleteTodoListCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        
         var entity = await repository
             .FirstOrDefaultAsync(new TodoListGetByIdSpec(request.Id, user.Id!), cancellationToken)
             .ConfigureAwait(false);

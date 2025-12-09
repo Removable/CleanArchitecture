@@ -1,10 +1,10 @@
 # Project Index: CleanArchitecture Template
 
-Generated: 2025-12-08
+Generated: 2025-12-09
 
 ## Overview
 
-ASP.NET Core 9 Clean Architecture project template with .NET Aspire orchestration. Implements a TodoList/TodoItem domain using CQRS pattern with Mediator, FastEndpoints for API, and PostgreSQL for persistence.
+ASP.NET Core 10 Clean Architecture project template with .NET Aspire orchestration. Implements a TodoList/TodoItem domain using CQRS pattern with Mediator, FastEndpoints for API, and PostgreSQL for persistence.
 
 ## Project Structure
 
@@ -51,7 +51,7 @@ CleanArchitecture/
 - **Features**:
   - `TodoLists/Commands/`: CreateTodoList, UpdateTodoList, DeleteTodoList, PurgeTodoLists
   - `TodoLists/Queries/`: GetTodos
-  - `TodoItems/Commands/`: CreateTodoItem, UpdateTodoItem, UpdateTodoItemDetail
+  - `TodoItems/Commands/`: CreateTodoItem, UpdateTodoItem, UpdateTodoItemDetail, DeleteTodoItem
   - `TodoItems/Queries/`: GetTodoItemsWithPagination
 - **Validators**: FluentValidation per command/query
 - **Mappings**: Mapster for DTO projections
@@ -86,16 +86,16 @@ CleanArchitecture/
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| FastEndpoints | 7.1.0 | Minimal API endpoints |
+| FastEndpoints | 7.1.1 | Minimal API endpoints |
 | Mediator | 3.0.1 | Source-generated CQRS |
-| FluentValidation | 12.0.0 | Request validation |
+| FluentValidation | 12.1.1 | Request validation |
 | Mapster | 7.4.0 | Object mapping |
 | Ardalis.Specification | 9.3.1 | Repository pattern |
 | Ardalis.GuardClauses | 5.0.0 | Guard clauses |
 | Ardalis.Result | 10.1.0 | Result pattern |
-| EF Core + Npgsql | 9.0.x | PostgreSQL persistence |
-| ASP.NET Identity | 9.0.x | Authentication/Authorization |
-| Aspire | 9.5.2 | Cloud-native orchestration |
+| EF Core + Npgsql | 10.0.0 | PostgreSQL persistence |
+| ASP.NET Identity | 10.0.0 | Authentication/Authorization |
+| Aspire.Npgsql.EFCore | 13.0.2 | Cloud-native orchestration |
 
 ## Test Structure
 
@@ -162,6 +162,13 @@ dotnet run --project src/MyApp.Web
 | Source Projects | 7 |
 | Test Projects | 2 |
 | Domain Entities | 2 |
-| Commands | 6 |
+| Commands | 7 |
 | Queries | 2 |
 | Endpoints | 5 |
+
+## CI/CD
+
+| Workflow | Purpose |
+|----------|---------|
+| `.github/workflows/dotnet.yml` | Build and test on push/PR to master |
+| `.github/workflows/codeql.yml` | Security analysis |

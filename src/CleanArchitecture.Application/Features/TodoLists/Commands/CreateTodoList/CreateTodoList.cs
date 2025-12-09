@@ -8,15 +8,11 @@ public sealed record CreateTodoListCommand : IRequest<Guid>
     public required string Title { get; init; }
 }
 
-public sealed class CreateTodoListCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class CreateTodoListCommandHandler(IRepository<TodoList> repository, IUser user)
     : IRequestHandler<CreateTodoListCommand, Guid>
 {
     public async ValueTask<Guid> Handle(CreateTodoListCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        
         var entity = new TodoList { Title = request.Title, UserId = user.Id! };
 
         await repository.AddAsync(entity, cancellationToken).ConfigureAwait(false);

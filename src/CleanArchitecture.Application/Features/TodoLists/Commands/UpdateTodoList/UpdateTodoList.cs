@@ -11,15 +11,11 @@ public sealed record UpdateTodoListCommand : IRequest
     public required string Title { get; init; }
 }
 
-public sealed class UpdateTodoListCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class UpdateTodoListCommandHandler(IUser user, IRepository<TodoList> repository)
     : IRequestHandler<UpdateTodoListCommand>
 {
     public async ValueTask<Unit> Handle(UpdateTodoListCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        
         var spec = new TodoListGetByIdSpec(request.Id, user.Id!);
         var entity = await repository
             .FirstOrDefaultAsync(spec, cancellationToken).ConfigureAwait(false);

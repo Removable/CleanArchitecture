@@ -17,7 +17,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    await app.InitialiseDatabaseAsync();
+    await app.InitialiseDatabaseAsync().ConfigureAwait(false);
 }
 
 if (!app.Environment.IsDevelopment())

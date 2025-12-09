@@ -9,7 +9,17 @@
       "mcp__git__git_diff",
       "mcp__git__git_log",
       "mcp__git__git_set_working_dir",
-      "mcp__git__git_commit"
+      "mcp__git__git_commit",
+      "mcp__serena__search_for_pattern",
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__serena__activate_project",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__find_file",
+      "mcp__serena__think_about_collected_information",
+      "Bash(mkdir:*)",
+      "mcp__serena__think_about_whether_you_are_done"
     ],
     "deny": [],
     "ask": []

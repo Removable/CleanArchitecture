@@ -20,7 +20,7 @@ public class EfBaseRepository<T>(AppDbContext dbContext) : RepositoryBase<T>(dbC
     {
         var query = ApplySpecification(specification);
         return await query.ProjectToType<TResult>()
-            .ToListAsync(cancellationToken);
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<TResult[]> ArrayAsync<TResult>(ISpecification<T, TResult> specification,

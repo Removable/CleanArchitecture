@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
+﻿using System.Data.Common;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using CleanArchitecture.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -14,13 +10,13 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CleanArchitecture.IntegrationTests.Infrastructure;
 
-public sealed class CustomWebApplicationFactory : WebApplicationFactory<global::Program>, IAsyncLifetime
+public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private DbConnection? _connection;
 
@@ -64,6 +60,14 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<global::
             {
                 services.Remove(d);
             }
+            var optionConfigurators = services
+                .Where(d => d.ServiceType == typeof(IConfigureOptions<DbContextOptions<AppDbContext>>)
+                            || d.ServiceType == typeof(IPostConfigureOptions<DbContextOptions<AppDbContext>>))
+                .ToList();
+            foreach (var d in optionConfigurators)
+            {
+                services.Remove(d);
+            }
 
             // 3) Use a separate EF service provider scoped to Sqlite provider only
             var efServices = new ServiceCollection()
@@ -75,24 +79,31 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<global::
             conn.Open();
             _connection = conn;
 
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseSqlite(conn);
-                options.UseInternalServiceProvider(efServices);
-            });
+            var sqliteOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlite(conn)
+                .UseInternalServiceProvider(efServices)
+                .Options;
 
-            services.AddPooledDbContextFactory<AppDbContext>(options =>
-            {
-                options.UseSqlite(conn);
-                options.UseInternalServiceProvider(efServices);
-            });
+            services.AddSingleton(sqliteOptions);
+            services.AddScoped<AppDbContext>(_ => new AppDbContext(sqliteOptions));
         });
     }
 
     public Task InitializeAsync()
     {
-        // No-op: for the first smoke tests we don't touch the database.
-        return Task.CompletedTask;
+        // Ensure the in-memory SQLite database has the schema applied before tests run.
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+#if DEBUG
+        var providerNames = dbContext.Database.GetDbConnection().GetType().FullName;
+        Console.WriteLine($"[CustomWebApplicationFactory] DbConnection provider: {providerNames}");
+        var extensions = dbContext.GetService<Microsoft.EntityFrameworkCore.Infrastructure.IDbContextOptions>().Extensions;
+        foreach (var ext in extensions)
+        {
+            Console.WriteLine($"[CustomWebApplicationFactory] DbContextOptions extension: {ext.GetType().FullName}");
+        }
+#endif
+        return dbContext.Database.EnsureCreatedAsync();
     }
 
     public override async ValueTask DisposeAsync()

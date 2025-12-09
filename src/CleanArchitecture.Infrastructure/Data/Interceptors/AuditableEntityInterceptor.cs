@@ -3,11 +3,10 @@ using CleanArchitecture.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanArchitecture.Infrastructure.Data.Interceptors;
 
-public sealed class AuditableEntityInterceptor(TimeProvider dateTime, IServiceScopeFactory serviceScopeFactory)
+public sealed class AuditableEntityInterceptor(TimeProvider dateTime, IUser user)
     : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
@@ -31,9 +30,6 @@ public sealed class AuditableEntityInterceptor(TimeProvider dateTime, IServiceSc
         {
             return;
         }
-
-        using var scope = serviceScopeFactory.CreateScope();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
 
         foreach (var entry in context.ChangeTracker.Entries<BaseAuditableEntity>())
         {

@@ -13,7 +13,7 @@ public class IdentityService(
 {
     public async Task<string?> GetUserNameAsync(string userId)
     {
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
 
         return user?.UserName;
     }
@@ -22,44 +22,44 @@ public class IdentityService(
     {
         var user = new ApplicationUser { UserName = userName, Email = userName };
 
-        var result = await userManager.CreateAsync(user, password);
+        var result = await userManager.CreateAsync(user, password).ConfigureAwait(false);
 
         return (result.ToApplicationResult(), user.Id);
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)
     {
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
 
-        return user != null && await userManager.IsInRoleAsync(user, role);
+        return user != null && await userManager.IsInRoleAsync(user, role).ConfigureAwait(false);
     }
 
     public async Task<bool> AuthorizeAsync(string userId, string policyName)
     {
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
 
         if (user == null)
         {
             return false;
         }
 
-        var principal = await userClaimsPrincipalFactory.CreateAsync(user);
+        var principal = await userClaimsPrincipalFactory.CreateAsync(user).ConfigureAwait(false);
 
-        var result = await authorizationService.AuthorizeAsync(principal, policyName);
+        var result = await authorizationService.AuthorizeAsync(principal, policyName).ConfigureAwait(false);
 
         return result.Succeeded;
     }
 
     public async Task<Result> DeleteUserAsync(string userId)
     {
-        var user = await userManager.FindByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
 
-        return user != null ? await DeleteUserAsync(user) : Result.Success();
+        return user != null ? await DeleteUserAsync(user).ConfigureAwait(false) : Result.Success();
     }
 
     public async Task<Result> DeleteUserAsync(ApplicationUser user)
     {
-        var result = await userManager.DeleteAsync(user);
+        var result = await userManager.DeleteAsync(user).ConfigureAwait(false);
 
         return result.ToApplicationResult();
     }

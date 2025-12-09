@@ -14,17 +14,13 @@ public sealed record GetTodoItemsWithPaginationQuery : IRequest<PaginatedList<To
 }
 
 public sealed class
-    GetTodoItemsWithPaginationQueryHandler(IServiceScopeFactory serviceScopeFactory)
+    GetTodoItemsWithPaginationQueryHandler(IReadRepository<TodoItem> repository, IUser user)
     : IRequestHandler<GetTodoItemsWithPaginationQuery,
         PaginatedList<TodoItemBriefDto>>
 {
     public async ValueTask<PaginatedList<TodoItemBriefDto>> Handle(GetTodoItemsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IReadRepository<TodoItem>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-
         var spec = new GetTodoItemsByListIdSpec(request.ListId, Guard.Against.NullOrEmpty(user.Id), request.PageNumber,
             request.PageSize);
 

@@ -13,16 +13,13 @@ public sealed record CreateTodoItemCommand : IRequest<Result<Guid>>
 }
 
 public sealed class CreateTodoItemCommandHandler(
-    IServiceScopeFactory serviceScopeFactory)
+    IUser user,
+    IRepository<TodoList> repository)
     : IRequestHandler<CreateTodoItemCommand, Result<Guid>>
 {
     public async ValueTask<Result<Guid>> Handle(CreateTodoItemCommand request,
         CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-
         var newTodoItem = new TodoItem
         {
             ListId = request.ListId,
@@ -39,8 +36,8 @@ public sealed class CreateTodoItemCommandHandler(
 
         todoList.AddTodoItem(newTodoItem);
 
-        await repository.UpdateAsync(todoList, cancellationToken);
-        await repository.SaveChangesAsync(cancellationToken);
+        await repository.UpdateAsync(todoList, cancellationToken).ConfigureAwait(false);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return Result<Guid>.Success(newTodoItem.Id);
     }

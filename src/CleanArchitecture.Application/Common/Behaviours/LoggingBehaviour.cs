@@ -4,7 +4,8 @@ namespace CleanArchitecture.Application.Common.Behaviours;
 
 public sealed class LoggingBehaviour<TMessage, TResponse>(
     ILogger<TMessage> logger,
-    IServiceScopeFactory serviceScopeFactory)
+    IUser user,
+    IIdentityService identityService)
     : MessagePreProcessor<TMessage, TResponse>
     where TMessage : IMessage
 {
@@ -12,10 +13,6 @@ public sealed class LoggingBehaviour<TMessage, TResponse>(
 
     protected override async ValueTask Handle(TMessage message, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
-
         var requestName = typeof(TMessage).Name;
         var userId = user.Id ?? string.Empty;
         var userName = string.Empty;

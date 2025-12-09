@@ -2,30 +2,30 @@
 
 namespace CleanArchitecture.Application.Common.Behaviours;
 
-public sealed class ValidationBehaviour<TRequest, TResponse>(IServiceScopeFactory serviceScopeFactory)
+public sealed class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>>? validators)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : IMessage
 {
     public async ValueTask<TResponse> Handle(TRequest message, MessageHandlerDelegate<TRequest, TResponse> next,
         CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var validators = scope.ServiceProvider.GetServices<IValidator<TRequest>>().ToArray();
-        
-        if (validators.Length != 0)
+        var validatorArray = validators?.ToArray();
+        if (validatorArray is not { Length: > 0 })
         {
-            var validationResults = await Task.WhenAll(
-                validators.Select(v =>
-                    v.ValidateAsync(new ValidationContext<TRequest>(message), cancellationToken)));
+            return await next(message, cancellationToken);
+        }
 
-            var failures = validationResults
-                .Where(r => r.Errors.Any())
-                .SelectMany(r => r.Errors)
-                .ToArray();
+        var validationResults = await Task.WhenAll(
+            validatorArray.Select(v =>
+                v.ValidateAsync(new ValidationContext<TRequest>(message), cancellationToken)));
 
-            if (failures.Length != 0)
-            {
-                throw new ValidationException(failures);
-            }
+        var failures = validationResults
+            .Where(r => r.Errors.Count != 0)
+            .SelectMany(r => r.Errors)
+            .ToArray();
+
+        if (failures.Length != 0)
+        {
+            throw new ValidationException(failures);
         }
 
         return await next(message, cancellationToken);

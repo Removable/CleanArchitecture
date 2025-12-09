@@ -5,7 +5,8 @@ namespace CleanArchitecture.Application.Common.Behaviours;
 
 public sealed class PerformanceBehaviour<TRequest, TResponse>(
     ILogger<TRequest> logger,
-    IServiceScopeFactory serviceScopeFactory)
+    IUser user,
+    IIdentityService identityService)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IMessage
 {
@@ -14,10 +15,6 @@ public sealed class PerformanceBehaviour<TRequest, TResponse>(
     public async ValueTask<TResponse> Handle(TRequest message, MessageHandlerDelegate<TRequest, TResponse> next,
         CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
-
         _timer.Start();
 
         var response = await next(message, cancellationToken);
@@ -34,7 +31,7 @@ public sealed class PerformanceBehaviour<TRequest, TResponse>(
 
             if (!string.IsNullOrEmpty(userId))
             {
-                userName = await identityService.GetUserNameAsync(userId);
+                userName = await identityService.GetUserNameAsync(userId).ConfigureAwait(false);
             }
 
             logger.LogWarning(

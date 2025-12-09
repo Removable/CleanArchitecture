@@ -5,17 +5,14 @@ using Microsoft.Extensions.Logging;
 namespace CleanArchitecture.Application.Common.Behaviours;
 
 public sealed class AuthorizationBehaviour<TRequest, TResponse>(
-    IServiceScopeFactory serviceScopeFactory, 
+    IUser user,
+    IIdentityService identityService,
     ILogger<AuthorizationBehaviour<TRequest, TResponse>> logger)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : IMessage
 {
     public async ValueTask<TResponse> Handle(TRequest message, MessageHandlerDelegate<TRequest, TResponse> next,
         CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        var identityService = scope.ServiceProvider.GetRequiredService<IIdentityService>();
-        
         var authorizeAttributes = message.GetType().GetCustomAttributes<AuthorizeAttribute>().ToArray();
 
         if (authorizeAttributes.Length == 0)
@@ -40,7 +37,7 @@ public sealed class AuthorizationBehaviour<TRequest, TResponse>(
         {
             var requiredRoles = authorizeAttributesWithRoles.SelectMany(a => a.Roles).Distinct();
             var userRoles = user.Roles ?? [];
-            
+
             var authorized = requiredRoles.Any(role => userRoles.Contains(role));
 
             // Must be a member of at least one role in roles
@@ -61,7 +58,7 @@ public sealed class AuthorizationBehaviour<TRequest, TResponse>(
         {
             foreach (var policy in authorizeAttributesWithPolicies.Select(a => a.Policy))
             {
-                var authorized = await identityService.AuthorizeAsync(user.Id, policy);
+                var authorized = await identityService.AuthorizeAsync(user.Id, policy).ConfigureAwait(false);
 
                 if (!authorized)
                 {

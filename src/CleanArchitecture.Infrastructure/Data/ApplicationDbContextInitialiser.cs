@@ -68,7 +68,7 @@ public class ApplicationDbContextInitialiser(
     {
         try
         {
-            await TrySeedAsync();
+            await TrySeedAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

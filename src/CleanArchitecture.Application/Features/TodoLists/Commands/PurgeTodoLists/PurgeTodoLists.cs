@@ -8,15 +8,11 @@ namespace CleanArchitecture.Application.Features.TodoLists.Commands.PurgeTodoLis
 [Authorize(Policy = Policies.CanPurge)]
 public sealed record PurgeTodoListsCommand : IRequest<Unit>;
 
-public sealed class PurgeTodoListsCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class PurgeTodoListsCommandHandler(IUser user, IRepository<TodoList> repository)
     : IRequestHandler<PurgeTodoListsCommand, Unit>
 {
     public async ValueTask<Unit> Handle(PurgeTodoListsCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-        
         await repository.DeleteRangeAsync(new GetUserTodoListsSpec(Guard.Against.NullOrEmpty(user.Id)), cancellationToken).ConfigureAwait(false);
         await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

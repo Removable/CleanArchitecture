@@ -25,6 +25,7 @@ public sealed class CreateTodoListCommandValidator : AbstractValidator<CreateTod
         CancellationToken cancellationToken)
     {
         return !await _repository
-            .AnyAsync(new TodoListTitleUniquenessCheckSpec(null, _user.Id!, title), cancellationToken);
+            .AnyAsync(new TodoListTitleUniquenessCheckSpec(null, _user.Id!, title), cancellationToken)
+            .ConfigureAwait(false);
     }
 }

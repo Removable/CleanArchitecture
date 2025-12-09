@@ -40,7 +40,7 @@ public class CustomExceptionHandler : IExceptionHandler
         await httpContext.Response.WriteAsJsonAsync(new ValidationProblemDetails(exception.Errors)
         {
             Status = StatusCodes.Status400BadRequest, Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task HandleNotFoundException(HttpContext httpContext, Exception ex)
@@ -52,20 +52,22 @@ public class CustomExceptionHandler : IExceptionHandler
         await httpContext.Response.WriteAsJsonAsync(new ProblemDetails
         {
             Status = StatusCodes.Status404NotFound, Detail = exception.Message
-        });
+        }).ConfigureAwait(false);
     }
 
     private async Task HandleUnauthorizedAccessException(HttpContext httpContext)
     {
         httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
-        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails { Status = StatusCodes.Status401Unauthorized, });
+        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails { Status = StatusCodes.Status401Unauthorized, })
+            .ConfigureAwait(false);
     }
 
     private async Task HandleForbiddenAccessException(HttpContext httpContext)
     {
         httpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
 
-        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails { Status = StatusCodes.Status403Forbidden, });
+        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails { Status = StatusCodes.Status403Forbidden, })
+            .ConfigureAwait(false);
     }
 }

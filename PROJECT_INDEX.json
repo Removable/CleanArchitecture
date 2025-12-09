@@ -1,8 +1,8 @@
 {
   "projectName": "CleanArchitecture",
-  "description": "ASP.NET Core 9 Clean Architecture project template with .NET Aspire orchestration",
-  "generated": "2025-12-08",
-  "framework": ".NET 9.0",
+  "description": "ASP.NET Core 10 Clean Architecture project template with .NET Aspire orchestration",
+  "generated": "2025-12-09",
+  "framework": ".NET 10.0",
   "architecture": "Clean Architecture with CQRS",
   "entryPoints": {
     "webApi": "src/CleanArchitecture.Web/Program.cs",
@@ -118,7 +118,8 @@
         "commands": [
           "CreateTodoItem",
           "UpdateTodoItem",
-          "UpdateTodoItemDetail"
+          "UpdateTodoItemDetail",
+          "DeleteTodoItem"
         ],
         "queries": ["GetTodoItemsWithPagination"]
       }
@@ -151,9 +152,9 @@
   },
   "dependencies": {
     "core": [
-      { "name": "FastEndpoints", "version": "7.1.0" },
+      { "name": "FastEndpoints", "version": "7.1.1" },
       { "name": "Mediator", "version": "3.0.1" },
-      { "name": "FluentValidation", "version": "12.0.0" },
+      { "name": "FluentValidation", "version": "12.1.1" },
       { "name": "Mapster", "version": "7.4.0" }
     ],
     "ardalis": [
@@ -162,11 +163,11 @@
       { "name": "Ardalis.Result", "version": "10.1.0" }
     ],
     "efCore": [
-      { "name": "Microsoft.EntityFrameworkCore", "version": "9.0.10" },
-      { "name": "Npgsql.EntityFrameworkCore.PostgreSQL", "version": "9.0.4" }
+      { "name": "Microsoft.EntityFrameworkCore", "version": "10.0.0" },
+      { "name": "Npgsql.EntityFrameworkCore.PostgreSQL", "version": "10.0.0" }
     ],
     "aspire": [
-      { "name": "Aspire.Npgsql.EntityFrameworkCore.PostgreSQL", "version": "9.5.2" }
+      { "name": "Aspire.Npgsql.EntityFrameworkCore.PostgreSQL", "version": "13.0.2" }
     ],
     "testing": [
       { "name": "xUnit" },
@@ -192,11 +193,17 @@
     "Aggregate Root",
     "Value Objects"
   ],
+  "cicd": {
+    "workflows": [
+      { "name": "dotnet.yml", "purpose": "Build and test on push/PR to master" },
+      { "name": "codeql.yml", "purpose": "Security analysis" }
+    ]
+  },
   "fileCounts": {
     "sourceProjects": 7,
     "testProjects": 2,
     "domainEntities": 2,
-    "commands": 6,
+    "commands": 7,
     "queries": 2,
     "endpoints": 5
   }

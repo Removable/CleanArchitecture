@@ -7,23 +7,24 @@ namespace CleanArchitecture.IntegrationTests.Endpoints;
 
 public class TodoListApiTests
 {
-    [Fact(Skip = "Pending database test setup (SQLite/Testcontainers)")]
+    [Fact]
     public async Task Create_then_Get_TodoLists_should_succeed()
     {
-        await using var factory = new CleanArchitecture.IntegrationTests.Infrastructure.CustomWebApplicationFactory();
+        await using var factory = new CustomWebApplicationFactory();
+        await factory.InitializeAsync();
         var client = factory.CreateJsonClient();
 
         // Create a new list
-        var createResponse = await client.PostAsJsonAsync("api/v1/TodoLists", new { title = "My List" });
+        var createResponse = await client.PostAsJsonAsync("v1/TodoLists", new { title = "My List" });
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var created = await createResponse.Content.ReadFromJsonAsync<CreateTodoListResponseDto>();
         created.Should().NotBeNull();
-        created!.Id.Should().NotBeEmpty();
+        created.Id.Should().NotBeEmpty();
         created.Title.Should().Be("My List");
 
         // Query lists
-        var getResponse = await client.GetAsync("api/v1/TodoLists");
+        var getResponse = await client.GetAsync("v1/TodoLists");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var vm = await getResponse.Content.ReadFromJsonAsync<TodosVmDto>();

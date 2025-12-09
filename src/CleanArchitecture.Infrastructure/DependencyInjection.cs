@@ -21,16 +21,14 @@ public static class DependencyInjection
         var connectionString = builder.Configuration.GetConnectionString("CleanArchitectureDb");
         Guard.Against.Null(connectionString, message: "Connection string 'CleanArchitectureDb' not found.");
 
-        builder.Services.AddSingleton<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-        builder.Services.AddSingleton<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
-        builder.Services.AddPooledDbContextFactory<AppDbContext>((sp, options) =>
+        builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        builder.Services.AddDbContext<AppDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
             options.UseNpgsql(connectionString);
             options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         });
-        builder.Services.AddScoped<AppDbContext>(provider => 
-            provider.GetRequiredService<IDbContextFactory<AppDbContext>>().CreateDbContext());
         builder.EnrichNpgsqlDbContext<AppDbContext>();
 
         builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>))

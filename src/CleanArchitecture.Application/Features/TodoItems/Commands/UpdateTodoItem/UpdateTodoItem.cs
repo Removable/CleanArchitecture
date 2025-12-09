@@ -15,15 +15,11 @@ public sealed record UpdateTodoItemCommand : IRequest<Result>
     public bool Done { get; init; }
 }
 
-public sealed class UpdateTodoItemCommandHandler(IServiceScopeFactory serviceScopeFactory)
+public sealed class UpdateTodoItemCommandHandler(IRepository<TodoList> repository, IUser user)
     : IRequestHandler<UpdateTodoItemCommand, Result>
 {
     public async ValueTask<Result> Handle(UpdateTodoItemCommand request, CancellationToken cancellationToken)
     {
-        using var scope = serviceScopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IRepository<TodoList>>();
-        var user = scope.ServiceProvider.GetRequiredService<IUser>();
-
         var todoList = await repository.SingleOrDefaultAsync(
                 new TodoListGetByIdSpec(request.TodoListId, Guard.Against.NullOrEmpty(user.Id)), cancellationToken)
             .ConfigureAwait(false);
@@ -41,8 +37,8 @@ public sealed class UpdateTodoItemCommandHandler(IServiceScopeFactory serviceSco
         todoItem.Title = request.Title;
         todoItem.Done = request.Done;
 
-        await repository.UpdateAsync(todoList, cancellationToken);
-        await repository.SaveChangesAsync(cancellationToken);
+        await repository.UpdateAsync(todoList, cancellationToken).ConfigureAwait(false);
+        await repository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return Result.Success();
     }
 }
